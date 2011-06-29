@@ -38,7 +38,7 @@ with_jquery(function ($) {
     // 6. window["selfUpdaterCallback:" + URL] is now defined, so it is invoked, and the external version number is passed in
     // 7. if the external version number (ver) is greater than the installed version (VERSION), the notification is invoked
     var VERSION = 2;                                                         //<--- YOUR VERSION HERE (careful, 1.2 is > than 1.13; if you mean 1.02, say so!)
-    var URL = "https://gist.github.com/raw/874058/selfupdatingscript.user.js"; //<--- URL OF SCRIPT SOURCE HERE (don't forget to change @includes too!)
+    var URL = "http://tel-o-fun-plus.notlong.com";                           //<--- URL OF SCRIPT SOURCE HERE (don't forget to change @includes too!)
 
     if(window["selfUpdaterCallback:" + URL]) {
       window["selfUpdaterCallback:" + URL](VERSION);
