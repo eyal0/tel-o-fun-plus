@@ -967,10 +967,11 @@ with_jquery(function ($) {
       update_notification.style.left = "0px";
       update_notification.style.position = "fixed";
       update_notification.style.backgroundColor = "lightyellow";
-      update_notification.innerHTML = "<a href=\"http://code.google.com/p/tel-o-fun-plus/\">\u05ea\u05dc\u05be\u05d0\u05d5\u05e4\u05df+</a>";
+      var innerHTML = "<a href=\"http://code.google.com/p/tel-o-fun-plus/\">\u05ea\u05dc\u05be\u05d0\u05d5\u05e4\u05df+</a>";
       if(newver > oldver) {
-        update_notification.innerHTML += " (<a href=\"http://tel-o-fun-plus.notlong.com/\">\u05e2\u05d3\u05db\u05d5\u05df</a>)";
+        innerHTML += " (<a href=\"http://tel-o-fun-plus.notlong.com/\">\u05e2\u05d3\u05db\u05d5\u05df</a>)";
       }
+      update_notification.innerHTML = innerHTML;
       document.body.insertBefore(update_notification, document.body.firstChild);
     });
   });
