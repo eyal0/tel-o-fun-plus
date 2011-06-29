@@ -4,7 +4,7 @@
 // @description   Enhance Tel-O-Fun website for cyclists
 // @include       http://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
 // @include       https://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
-// @version       8
+// @version       9
 // ==/UserScript==
 
 /*
@@ -851,6 +851,16 @@ function addRow(tbody) {
 }
 
 function telofun() {
+  var update_notification = document.createElement("div");
+  //border: 1px solid black; visibility: hidden; top: 0px; left: 0px; position: fixed; background-color: lightyellow; z-index: 10000; width: 0px; height: 0px;
+  update_notification.style.border = "0px";
+  update_notification.style.top = "0px";
+  update_notification.style.left = "0px";
+  update_notification.style.position = "fixed";
+  update_notification.style.backgroundColor = "lightyellow";
+  var innerHTML = "<a href=\"http://code.google.com/p/tel-o-fun-plus/\">\u05ea\u05dc\u05be\u05d0\u05d5\u05e4\u05df+</a>";
+  update_notification.innerHTML = innerHTML;
+  document.body.insertBefore(update_notification, document.body.firstChild);
   var table=document.evaluate("//table[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
   var tbl = table.snapshotItem(0);
   if(!tbl) return; //fuck it
@@ -883,11 +893,17 @@ function telofun() {
     var fromString = nodes.snapshotItem(i).children[2].textContent;
     var toString = nodes.snapshotItem(i).children[3].textContent;
     var distance = -1;
+    if(stations[fromString]) {
+      nodes.snapshotItem(i).children[2].innerHTML = "<a href=\"http://maps.google.com/maps?q=" + stations[fromString].lat + "," + stations[fromString].lon + "&dirflg=w\">" + nodes.snapshotItem(i).children[2].innerHTML + "</a>";
+    }
+    if(stations[toString]) {
+      nodes.snapshotItem(i).children[3].innerHTML = "<a href=\"http://maps.google.com/maps?q=" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\">" + nodes.snapshotItem(i).children[3].innerHTML + "</a>";
+    }
     if(stations[fromString] && stations[toString]) {
       var fromId = stations[fromString].id;
       var toId = stations[toString].id;
       distance = distances[fromId*83+toId];
-      nodes.snapshotItem(i).children[5].innerHTML = String(distance/1000);
+      nodes.snapshotItem(i).children[5].innerHTML = "<a href=\"http://maps.google.com/maps?q=from%20" + stations[fromString].lat + "," + stations[fromString].lon + "%20to%20" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\">" + String(distance/1000) + "</a>";
     }
     
     //now the speed
