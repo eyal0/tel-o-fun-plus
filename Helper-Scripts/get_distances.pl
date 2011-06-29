@@ -25,8 +25,8 @@ for(my $i=0; $i < @rows; $i++) {
     my $foot_distance = 9999;
 
     unlink <short*>;
-    #print("./router --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=foot --profile=foot --dir=\"../data/\"\n");
-    system("./router --quiet --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=foot --profile=foot --dir=\"../data/\"");
+    #print("./routino-2.0.2/web/bin/router --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=foot --profile=foot --dir=\"./routino-2.0.2/web/data/\"\n");
+    system("./routino-2.0.2/web/bin/router --quiet --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=foot --profile=foot --dir=\"./routino-2.0.2/web/data/\"");
     if(open(SHORTEST, "<shortest.txt")) {
       for(my $k=0; $k<6; $k++) {
         <SHORTEST>; #discard
@@ -39,8 +39,8 @@ for(my $i=0; $i < @rows; $i++) {
     }
 
     unlink <short*>;
-    #print("./router --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=bicycle --profile=bicycle --dir=\"../data/\"\n");
-    system("./router --quiet --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=bicycle --profile=bicycle --dir=\"../data/\"");
+    #print("./routino-2.0.2/web/bin/router --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=bicycle --profile=bicycle --dir=\"./routino-2.0.2/web/data/\"\n");
+    system("./routino-2.0.2/web/bin/router --quiet --lat1=$lat1 --lon1=$lon1 --lat2=$lat2 --lon2=$lon2 --transport=bicycle --profile=bicycle --dir=\"./routino-2.0.2/web/data/\"");
     if(open(SHORTEST, "<shortest.txt")) {
       for(my $k=0; $k<6; $k++) {
         <SHORTEST>; #discard

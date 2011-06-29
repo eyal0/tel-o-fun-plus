@@ -28,7 +28,7 @@ foreach my $row (@rows) {
   }
 
   my @elems = split(/,/, $row);
-  printf("\"\\u%s\":%d", join("\\u", map({sprintf "%04x", ord;} split(//, $elems[3]))), $count);
+  printf("\"\\u%s\": {\"id\": %d, \"lat\": %s, \"lon\": %s}", join("\\u", map({sprintf "%04x", ord;} split(//, $elems[3]))), $count, $elems[1], $elems[2]);
   $count++;
   if($count < @rows) {
     print ",";
