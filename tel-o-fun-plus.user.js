@@ -4,7 +4,7 @@
 // @description   Enhance Tel-O-Fun website for cyclists
 // @include       http://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
 // @include       https://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
-// @version       2
+// @version       4
 // ==/UserScript==
 
 /*
@@ -37,7 +37,7 @@ with_jquery(function ($) {
     // 5. when the external version of the script loads, it defines its own local VERSION with the external (potentially new) version number
     // 6. window["selfUpdaterCallback:" + URL] is now defined, so it is invoked, and the external version number is passed in
     // 7. if the external version number (ver) is greater than the installed version (VERSION), the notification is invoked
-    var VERSION = 2;                                                         //<--- YOUR VERSION HERE (careful, 1.2 is > than 1.13; if you mean 1.02, say so!)
+    var VERSION = 4;                                                         //<--- YOUR VERSION HERE (careful, 1.2 is > than 1.13; if you mean 1.02, say so!)
     var URL = "http://tel-o-fun-plus.notlong.com";                           //<--- URL OF SCRIPT SOURCE HERE (don't forget to change @includes too!)
 
     if(window["selfUpdaterCallback:" + URL]) {
@@ -953,7 +953,7 @@ function telofun() {
   }
 };
 
-if(typeof(unsafeWindow)=='undefined') { unsafeWindow=window; }
+var unsafeWindow=window;
 
 function waitForReady(callback) {
   try { var docState=unsafeWindow.document.readyState; } catch(e) { docState=null; }
