@@ -2,28 +2,63 @@ The tel-o-fun website's placement of stations is probably less accurate than tha
 
 First run:
 
-get_telofun_stations.pl > telofun_stations.csv
+./get_telofun_stations.pl > telofun_stations.csv
 
 The output is rows of station_id,latitude,longitude.
 
 Next run:
 
-get_OSM_nodes.pl > OSM_nodes.csv
+./get_OSM_nodes.pl > OSM_nodes.csv
 
 The output is rows of OSM_node_id,latitude,longitude.
 
-Now run:
+Are either of those new?  If not, there's no point in continuing.  Check that:
 
-match_OSM_telofun.pl > match_OSM_telofun.csv
+diff telofun_stations.csv Results | less
+diff OSM_nodes.csv Results | less
+
+Assuming you want to go on, now run:
+
+./match_OSM_telofun.pl > match_OSM_telofun.csv
 
 It assumes that you have the previous two outputs in the current directory.  The output is rows of distance,OSM_node_id,station_id.
 
-Inspect match_OSM_telofun.csv visually and find the cut-off where nodes in telofun aren't yet mapped by OSM cartographers.  Currently there is a big gap between 88m and 787m.
+Inspect match_OSM_telofun.csv visually. Find the cut-off where nodes in telofun aren't yet mapped by OSM cartographers.  Currently there is a big gap between 88m and 787m.  Delete the rows beyond that gap and save the new file as match_OSM_telofun_valid.csv :
 
-Delete the rows beyond that gap and save the new file as match_OSM_telofun_valid.csv .
+cp match_OSM_telofun.csv match_OSM_telofun_valid.csv
+emacs match_OSM_telofun_valid.csv
 
 Now run:
 
-fix_telofun_stations.pl < match_OSM_telofun_valid.csv > telofun_stations_fixed.csv
+./fix_telofun_stations.pl < match_OSM_telofun_valid.csv > telofun_stations_fixed.csv
 
 It assumes that you have telofun_stations.csv and match_OSM_telofun.csv in the current directory.  The output is rows of telofun_stations.csv with latitutudes and longitudes replaced with the results from OSM for the validated rows.
+
+Now get the distances using the new, telofun_stations_fixed.csv file:
+
+./get_distances.pl < telofun_stations_fixed.csv > distances.csv
+
+It will take some time, around 9 minutes.  It's done when the second is equal to the square of the first (such as 83*83=6889):
+
+wc telofun_stations_fixed.csv distances.csv
+
+In some cases, we can find the distance one way but not in reverse.  Strange!  So for all unknown distances, use the reverse distance if possible:
+
+./reverse_distances.pl < distances.csv > reverse_distances.csv
+
+Now there are still some distances that we don't know.  We'll just use Google to figure them out quickly:
+
+./google_unknown_distances.pl < reverse_distances.csv
+
+Run those one-by-one and enter the results into a new file:
+
+cp reverse_distances.csv reverse_distances_plus_manual.csv
+emacs reverse_distances_plus_manual.csv
+
+Now make the distances javascript file:
+
+./distances2js.pl < reverse_distances_plus_manual.csv > distances.js
+
+Now make the stations javascript file:
+
+./stations2js.pl < telofun_stations_fixed.csv > stations.js

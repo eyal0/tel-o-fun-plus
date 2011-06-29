@@ -19,7 +19,7 @@ sub sorter {
 
 #print join("", @rows);
 
-print "var distances = {";
+print "var distances = [";
 my $count = 0;
 foreach my $row (@rows) {
   if($count % 10 != 0) {
@@ -35,4 +35,4 @@ foreach my $row (@rows) {
     print ",";
   }
 }
-print "\n};\n";
+print "\n];\n";
