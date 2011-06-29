@@ -62,3 +62,11 @@ Now make the distances javascript file:
 Now make the stations javascript file:
 
 ./stations2js.pl < telofun_stations_fixed.csv > stations.js
+
+Now some cleanup, run these one at a time:
+
+mv *.csv Results
+
+mv *.js Results
+
+rm shortest*
