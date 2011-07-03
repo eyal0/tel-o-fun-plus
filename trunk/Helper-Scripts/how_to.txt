@@ -34,11 +34,15 @@ Now run:
 
 It assumes that you have telofun_stations.csv and match_OSM_telofun.csv in the current directory.  The output is rows of telofun_stations.csv with latitutudes and longitudes replaced with the results from OSM for the validated rows.
 
+Re-get the OSM as needed:
+
+cd routino-2.0.2/web/data && nice ./create.sh && cd ../../..
+
 Now get the distances using the new, telofun_stations_fixed.csv file:
 
-./get_distances.pl < telofun_stations_fixed.csv > distances.csv
+nice ./get_distances.pl < telofun_stations_fixed.csv > distances.csv
 
-It will take some time, around 9 minutes.  It's done when the second is equal to the square of the first (such as 83*83=6889):
+It will take some time, around 11 minutes.  It's done when the second is equal to the square of the first (such as 85*85=7225):
 
 wc telofun_stations_fixed.csv distances.csv
 
@@ -62,6 +66,10 @@ Now make the distances javascript file:
 Now make the stations javascript file:
 
 ./stations2js.pl < telofun_stations_fixed.csv > stations.js
+
+Edit the script:
+
+emacs ../tel-o-fun-plus.user.js &
 
 Now some cleanup, run these one at a time:
 
