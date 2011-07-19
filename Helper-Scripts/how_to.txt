@@ -67,7 +67,7 @@ Now make the stations javascript file:
 
 ./stations2js.pl < telofun_stations_fixed.csv > stations.js
 
-Edit the script:
+Edit the script, *don't forget to increment the version*:
 
 emacs ../tel-o-fun-plus.user.js &
 
