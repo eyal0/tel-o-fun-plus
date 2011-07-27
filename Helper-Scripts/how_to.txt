@@ -38,11 +38,15 @@ Re-get the OSM as needed:
 
 cd routino-2.0.2/web/data && nice ./create.sh && cd ../../..
 
-Now get the distances using the new, telofun_stations_fixed.csv file:
+cd gosmore && rm -f *.pak ; cat ../routino-2.0.2/web/data/israel_and_palestine.osm | ./gosmore rebuild && cd ..
+
+Now get the distances using the new, telofun_stations_fixed.csv file with *ONE* of the two following programs:
 
 nice ./get_distances.pl < telofun_stations_fixed.csv > distances.csv
+nice python pyroute/route.py < telofun_stations_fixed.csv > distances.csv
+nice ./get_distances_gosmore.pl < telofun_stations_fixed.csv > distances.csv
 
-It will take some time, around 11 minutes.  It's done when the second is equal to the square of the first (such as 85*85=7225):
+It will take a long time.  It's done when the second is equal to the square of the first (such as 129*129=16641):
 
 wc telofun_stations_fixed.csv distances.csv
 

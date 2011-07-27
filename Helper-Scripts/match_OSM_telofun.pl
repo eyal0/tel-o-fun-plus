@@ -25,7 +25,7 @@ my @distances;
 
 sub Haversine {
   my ($lat1, $long1, $lat2, $long2) = @_;
-  my $r=3956;
+  my $r=6367;
 
   my $dlong = deg2rad($long1) - deg2rad($long2);
   my $dlat  = deg2rad($lat1) - deg2rad($lat2);
