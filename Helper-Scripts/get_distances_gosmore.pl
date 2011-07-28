@@ -44,30 +44,30 @@ for(my $i=0; $i < @rows; $i++) {
     unlink <short*>;
     #print("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=1&v=foot\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
     #print("\n");
-    system("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=1&v=foot\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
-    if(open(SHORTEST, "<shortest.txt")) {
-      my $prev_lat = $lat1;
-      my $prev_lon = $lon1;
-      $foot_distance = 0;
-      while(<SHORTEST>) {
-        $_ = substr $_,1;
-        my($lat, $lon) = split /,/;
-        if(!$lat || !$lon) {
-          #print "DEBUG: Ignoring $_\n";
-          next;
-        }
-        #print "DEBUG: $lat,$lon,$foot_distance\n";
-        $foot_distance += Haversine($prev_lat,$prev_lon,$lat,$lon);
-        $prev_lat = $lat;
-        $prev_lon = $lon;
-      }
-      $foot_distance += Haversine($prev_lat,$prev_lon,$lat2,$lon2);
-    }
+    #system("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=0&v=foot\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
+    #if(open(SHORTEST, "<shortest.txt")) {
+    #  my $prev_lat = $lat1;
+    #  my $prev_lon = $lon1;
+    #  $foot_distance = 0;
+    #  while(<SHORTEST>) {
+    #    $_ = substr $_,1;
+    #    my($lat, $lon) = split /,/;
+    #    if(!$lat || !$lon) {
+    #      #print "DEBUG: Ignoring $_\n";
+    #      next;
+    #    }
+    #    #print "DEBUG: $lat,$lon,$foot_distance\n";
+    #    $foot_distance += Haversine($prev_lat,$prev_lon,$lat,$lon);
+    #    $prev_lat = $lat;
+    #    $prev_lon = $lon;
+    #  }
+    #  $foot_distance += Haversine($prev_lat,$prev_lon,$lat2,$lon2);
+    #}
 
     unlink <short*>;
     #print("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=1&v=cycle\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
     #print("\n");
-    system("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=1&v=cycle\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
+    system("QUERY_STRING=\"flat=$lat1&flon=$lon1&tlat=$lat2&tlon=$lon2&fast=0&v=cycle\" && export QUERY_STRING && cd gosmore && ./gosmore > ../shortest.txt");
     if(open(SHORTEST, "<shortest.txt")) {
       my $prev_lat = $lat1;
       my $prev_lon = $lon1;
