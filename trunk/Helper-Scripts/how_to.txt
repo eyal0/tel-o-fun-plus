@@ -42,7 +42,7 @@ cd gosmore && rm -f *.pak ; cat ../routino-2.0.2/web/data/israel_and_palestine.o
 mv gosmore/gosmore.pak gosmore/master.pak
 cd gosmore && nice ./gosmore rebuild 32 34.7 32.2 35 && cd ..
 
-Now get the distances using the new, telofun_stations_fixed.csv file with *ONE* of the two following programs:
+Now get the distances using the new, telofun_stations_fixed.csv file with *ONE* of the following programs:
 
 nice ./get_distances.pl < telofun_stations_fixed.csv > distances.csv
 nice python pyroute/route.py < telofun_stations_fixed.csv > distances.csv
