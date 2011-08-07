@@ -36,9 +36,9 @@ It assumes that you have telofun_stations.csv and match_OSM_telofun.csv in the c
 
 Re-get the OSM as needed:
 
-cd routino-2.0.2/web/data && nice ./create.sh && cd ../../..
+cd routino-2.0.3/web/data && nice ./create.sh && cd ../../..
 
-cd gosmore && rm -f *.pak ; cat ../routino-2.0.2/web/data/israel_and_palestine.osm | nice ./gosmore rebuild && cd ..
+cd gosmore && rm -f *.pak ; cat ../routino-2.0.3/web/data/israel_and_palestine.osm | nice ./gosmore rebuild && cd ..
 mv gosmore/gosmore.pak gosmore/master.pak
 cd gosmore && nice ./gosmore rebuild 32 34.7 32.2 35 && cd ..
 
