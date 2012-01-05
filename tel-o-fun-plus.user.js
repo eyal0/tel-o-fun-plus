@@ -4,11 +4,12 @@
 // @description   Enhance Tel-O-Fun website for cyclists
 // @include       http://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
 // @include       https://www.tel-o-fun.co.il/%D7%94%D7%97%D7%A9%D7%91%D7%95%D7%9F%D7%A9%D7%9C%D7%99/tabid/63/TabSection/History/Default.aspx
-// @version       22
+// @include       http://www.bndsites.biz/facebook/Ravit/TelofunReports/*
+// @version       23
 // ==/UserScript==
 
 /*
-Copyright 2011 Eyal
+Copyright 2011 Eyal, Geva
 
 This file is part of Tel-O-Fun Distance.
 
@@ -1880,7 +1881,41 @@ Object.size = function(obj) {
     return size;
 };
 
+function getUrlParameter(name) {
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  
+  if (results == null) {
+    return "";
+  }
+  else {
+    return results[1];
+  }
+}
+
 function telofun() {
+  var START_TIME = 0;
+  var END_TIME   = 1;
+  var FROM       = 2;
+  var TO         = 3;
+  var BIKE_NUM   = 4;
+  var DISTANCE   = 5;
+  var TIME       = 6;
+  var BREAK_TIME = 7;
+  var SPEED      = 8;
+  var REPORT_URL = "http://www.bndsites.biz/facebook/Ravit/TelofunReports/";
+  var BICYCLE = "\u05d0\u05d5\u05e4\u05e0\u05d9\u05d9\u05dd";
+  var DISTANCE_KM = "\u05de\u05e8\u05d7\u05e7 (\u05e7\"\u05de)";
+  var RENTAL = "\u05d4\u05e9\u05db\u05e8\u05d4";
+  var STOP = "\u05e2\u05e6\u05d9\u05e8\u05d4";
+  var SPEED_KMS = "\u05de\u05d4\u05d9\u05e8\u05d5\u05ea (\u05e7\u05de\u05f4\u05e9)";
+  var REPORT_PROBLEM_WITH_BIKES = "\u05d3\u05d5\u05d5\u05d7/\u05d9 \u05e2\u05dc \u05ea\u05e7\u05dc\u05d4 \u05d1\u05d0\u05d5\u05e4\u05e0\u05d9\u05d9\u05dd \u05d0\u05dc\u05d5";
+  var SEE_STATION_LOCATION = "\u05e6\u05e4\u05d4/\u05d9 \u05d1\u05de\u05d9\u05e7\u05d5\u05dd \u05d4\u05ea\u05d7\u05e0\u05d4";
+  var SEE_SUGGESTED_ROUTE = "\u05e6\u05e4\u05d4/\u05d9 \u05d1\u05d4\u05e6\u05e2\u05ea \u05de\u05e1\u05dc\u05d5\u05dc";
+  var SUM = "\u05e1\u05d4\u05f4\u05db";
+  
   var update_notification = document.createElement("div");
   //border: 1px solid black; visibility: hidden; top: 0px; left: 0px; position: fixed; background-color: lightyellow; z-index: 10000; width: 0px; height: 0px;
   update_notification.style.border = "0px";
@@ -1891,76 +1926,132 @@ function telofun() {
   var innerHTML = "<a href=\"http://code.google.com/p/tel-o-fun-plus/\">\u05ea\u05dc\u05be\u05d0\u05d5\u05e4\u05df+</a>";
   update_notification.innerHTML = innerHTML;
   document.body.insertBefore(update_notification, document.body.firstChild);
-  var table=document.evaluate("//table[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-  var tbl = table.snapshotItem(0);
-  if(!tbl) return; //fuck it
-
-  addColumn(tbl);  //column for distances
-  tbl.tBodies[0].rows[0].children[5].textContent = "\u05de\u05e8\u05d7\u05e7 \u0028\u05e7\u05de\u05f3\u0029"; //distance (km')
-  addColumn(tbl);  //column for times
-  tbl.tBodies[0].rows[0].children[6].textContent = "\u05d6\u05de\u05df"; //time
-  addColumn(tbl);  //column for speed
-  tbl.tBodies[0].rows[0].children[7].textContent = "\u05de\u05d4\u05d9\u05e8\u05d5\u05ea \u0028\u05e7\u05de\u05f4\u05e9\u0029"; //speed (km/s)
-
-  var nodes=document.evaluate("//table[2]/tbody/tr", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-  var totalDistance = 0;
-  var totalTime = 0;
-  for(var i=0; i < nodes.snapshotLength; i++) {
-    var startTime = stringToDate(nodes.snapshotItem(i).children[0].textContent);
-    var endTime = stringToDate(nodes.snapshotItem(i).children[1].textContent);
-    var timeDiff = -1;
-    if(startTime && endTime) {
-      var timeString = "";
-      timeDiff = Math.floor((endTime.getTime() - startTime.getTime())/1000); //in seconds
-      if(timeDiff >= 30*60) { //if more than 30 minutes, color node red
-        nodes.snapshotItem(i).children[6].style.color = "red";
-      }
-      timeString = timeDiffToString(timeDiff);
-      nodes.snapshotItem(i).children[6].innerHTML = timeString;
-    }
+  
+  if (window.location.href.indexOf(REPORT_URL) >= 0) {
+    var bikerName = decodeURI(getUrlParameter("bikerName"));
+    var bikeNumber = getUrlParameter("bikeNumber");
     
-    //now the distance
-    var fromString = nodes.snapshotItem(i).children[2].textContent;
-    var toString = nodes.snapshotItem(i).children[3].textContent;
-    var distance = -1;
-    if(stations[fromString]) {
-      nodes.snapshotItem(i).children[2].innerHTML = "<a href=\"http://maps.google.com/maps?q=" + stations[fromString].lat + "," + stations[fromString].lon + "&dirflg=w\">" + nodes.snapshotItem(i).children[2].innerHTML + "</a>";
-    }
-    if(stations[toString]) {
-      nodes.snapshotItem(i).children[3].innerHTML = "<a href=\"http://maps.google.com/maps?q=" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\">" + nodes.snapshotItem(i).children[3].innerHTML + "</a>";
-    }
-    if(stations[fromString] && stations[toString]) {
-      var fromId = stations[fromString].id;
-      var toId = stations[toString].id;
-      distance = distances[fromId*Object.size(stations)+toId];
-      nodes.snapshotItem(i).children[5].innerHTML = "<a href=\"http://maps.google.com/maps?q=from%20" + stations[fromString].lat + "," + stations[fromString].lon + "%20to%20" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\">" + String(distance/1000) + "</a>";
-    }
+    document.getElementById("Name").value = bikerName;
+    document.getElementById("RadioButtonKind_2").checked = true;
+    document.getElementById("TextBoxKind_2").disabled = false;
+    document.getElementById("TextBoxKind_2").value = bikeNumber;
+  }
+  else {
+    var bikerName = document.getElementById("dnn_ctr438_View_lblUserNameTitle").innerHTML;
+    var table = document.evaluate("//table[2]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var tbl = table.snapshotItem(0);
+    if(!tbl) return; //fuck it
 
-    //now the speed
-    if(distance > 0 && timeDiff > 0) {
-      totalTime += timeDiff;
-      totalDistance += distance;
-      if(timeDiff > 0) {
-        nodes.snapshotItem(i).children[7].innerHTML = (distance/timeDiff*3.6).toPrecision(3);
+    // column for bike number - "bicycle"
+    tbl.tBodies[0].rows[0].children[BIKE_NUM].textContent = BICYCLE;
+
+    // column for distances - "distance (km)"
+    addColumn(tbl);
+    tbl.tBodies[0].rows[0].children[DISTANCE].textContent = DISTANCE_KM;
+
+    // column for times - "rental"
+    addColumn(tbl);
+    tbl.tBodies[0].rows[0].children[TIME].textContent = RENTAL;
+
+    // column for break time - "stop"
+    addColumn(tbl);
+    tbl.tBodies[0].rows[0].children[BREAK_TIME].textContent = STOP;
+
+    // column for speed - "speed (km/s)"
+    addColumn(tbl);
+    tbl.tBodies[0].rows[0].children[SPEED].textContent = SPEED_KMS;
+
+    var nodes = document.evaluate("//table[2]/tbody/tr", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+    var totalDistance = 0;
+    var totalTime = 0;
+    
+    for (var i = 1; i < nodes.snapshotLength; i++) {
+      var bikeNumber = nodes.snapshotItem(i).children[BIKE_NUM].textContent;
+      nodes.snapshotItem(i).children[BIKE_NUM].innerHTML = "<a href='" + REPORT_URL + "?bikerName=" + bikerName + "&bikeNumber=" + bikeNumber + "' title='" + REPORT_PROBLEM_WITH_BIKES + "'>" + bikeNumber + "</a>";
+      
+      var startTime = stringToDate(nodes.snapshotItem(i).children[START_TIME].textContent);
+      var endTime = stringToDate(nodes.snapshotItem(i).children[END_TIME].textContent);
+      var nextStartTime = new Date();
+      var timeDiff = -1;
+      
+      if (startTime && endTime) {
+        var timeString = "";
+        
+        // timeDiff in seconds
+        timeDiff = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+        
+        // if more than 30 minutes
+        if (timeDiff >= 30 * 60) {
+          // color node red
+          nodes.snapshotItem(i).children[TIME].style.color = "red";
+        }
+        
+        timeString = timeDiffToString(timeDiff);
+        nodes.snapshotItem(i).children[TIME].innerHTML = timeString;
+        
+        // if not last row
+        if (i + 1 < nodes.snapshotLength) {
+          nextStartTime = stringToDate(nodes.snapshotItem(i + 1).children[START_TIME].textContent);
+              
+          // breakTimeDiff in seconds
+          var breakTimeDiff = Math.floor((nextStartTime.getTime() - endTime.getTime()) / 1000);
+              
+          // if less than 10 minutes
+          if (breakTimeDiff <= 10 * 60) {
+            // color node red
+            nodes.snapshotItem(i).children[BREAK_TIME].style.color = "red";
+          }
+    
+          var breakTimeString = timeDiffToString(breakTimeDiff);
+          nodes.snapshotItem(i).children[BREAK_TIME].innerHTML = breakTimeString;
+        }
+      }
+      
+      // now the distance
+      var fromString = nodes.snapshotItem(i).children[FROM].textContent;
+      var toString = nodes.snapshotItem(i).children[TO].textContent;
+      var distance = -1;
+      if (stations[fromString]) {
+        nodes.snapshotItem(i).children[FROM].innerHTML = "<a href=\"http://maps.google.com/maps?hl=iw&q=" + stations[fromString].lat + "," + stations[fromString].lon + "&dirflg=w\" title='" + SEE_STATION_LOCATION + "'>" + nodes.snapshotItem(i).children[FROM].innerHTML + "</a>";
+      }
+      if (stations[toString]) {
+        nodes.snapshotItem(i).children[TO].innerHTML = "<a href=\"http://maps.google.com/maps?hl=iw&q=" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\" title='" + SEE_STATION_LOCATION + "'>" + nodes.snapshotItem(i).children[TO].innerHTML + "</a>";
+      }
+      if (stations[fromString] && stations[toString]) {
+        var fromId = stations[fromString].id;
+        var toId = stations[toString].id;
+        distance = distances[fromId*Object.size(stations)+toId];
+        nodes.snapshotItem(i).children[DISTANCE].innerHTML = "<a href=\"http://maps.google.com/maps?hl=iw&q=from%20" + stations[fromString].lat + "," + stations[fromString].lon + "%20to%20" + stations[toString].lat + "," + stations[toString].lon + "&dirflg=w\" title='" + SEE_SUGGESTED_ROUTE + "'>" + String(distance / 1000) + "</a>";
+      }
+
+      // now the speed
+      if (distance > 0 && timeDiff > 0) {
+        totalTime += timeDiff;
+        totalDistance += distance;
+        if (timeDiff > 0) {
+          nodes.snapshotItem(i).children[SPEED].innerHTML = (distance / timeDiff * 3.6).toPrecision(3);
+        }
       }
     }
-  }
 
-  if(totalTime>0) {
-    addRow(tbl.tBodies[0]); //row for totals
-    tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[4].textContent = "\u05e1\u05d4\u05f4\u05db";
-    tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[5].textContent = totalDistance/1000;
-    tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[6].textContent = timeDiffToString(totalTime);
-    tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[7].textContent = (totalDistance/totalTime*3.6).toPrecision(3);
+    if (totalTime > 0) {
+      // row for totals
+      addRow(tbl.tBodies[0]);
+      
+      tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[BIKE_NUM].textContent = SUM;
+      tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[DISTANCE].textContent = totalDistance / 1000;
+      tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[TIME].textContent = timeDiffToString(totalTime);
+      tbl.tBodies[0].rows[tbl.tBodies[0].rows.length-1].children[SPEED].textContent = (totalDistance / totalTime * 3.6).toPrecision(3);
+    }
   }
 };
 
-if(typeof(unsafeWindow)=='undefined') { unsafeWindow=window; }
+if (typeof(unsafeWindow)=='undefined') { unsafeWindow=window; }
 
 function waitForReady(callback) {
   try { var docState=unsafeWindow.document.readyState; } catch(e) { docState=null; }
-  if(docState) {
-    if(docState!='complete') { window.setTimeout(waitForReady,150,callback); return; }
+  if (docState) {
+    if (docState!='complete') { window.setTimeout(waitForReady,150,callback); return; }
   }
   callback();
 }
